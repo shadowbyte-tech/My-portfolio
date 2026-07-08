@@ -76,32 +76,45 @@ export default function AdvancedContactForm() {
 
     setIsSubmitting(true)
 
-    // Simulate form submission
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Create Gmail URL with pre-filled message
-      const subject = encodeURIComponent(formData.subject || 'Portfolio Contact Form')
-      const body = encodeURIComponent(
-        `Hello Sukka Manikanta Goud,
+      const formspreeId = import.meta.env.VITE_FORMSPREE_ID;
+      const web3formsKey = import.meta.env.VITE_WEB3FORMS_KEY;
 
-You have a new message from your portfolio contact form:
+      if (formspreeId) {
+        const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        if (!response.ok) {
+          throw new Error('Formspree submission failed');
+        }
+      } else if (web3formsKey) {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: web3formsKey,
+            ...formData
+          })
+        });
+        if (!response.ok) {
+          throw new Error('Web3Forms submission failed');
+        }
+      } else {
+        // Fallback/Mock Mode for seamless local testing and initial deployments
+        console.warn(
+          'Contact form submitted in MOCK mode. To receive real emails, set VITE_FORMSPREE_ID or VITE_WEB3FORMS_KEY in your .env file.'
+        );
+        await new Promise(resolve => setTimeout(resolve, 1200));
+      }
 
-Name: ${formData.name}
-Email: ${formData.email}
-
-Message:
-${formData.message}
-
----
-This message was sent via your portfolio website at ${new Date().toLocaleString()}`
-      )
-      
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=sukkamanikantagoud@gmail.com&su=${subject}&body=${body}`
-      
-      // Open Gmail in new tab
-      window.open(gmailUrl, '_blank')
-      
       setIsSubmitted(true)
       setFormData({ name: '', email: '', subject: '', message: '' })
       setErrors({})
@@ -110,6 +123,7 @@ This message was sent via your portfolio website at ${new Date().toLocaleString(
       setTimeout(() => setIsSubmitted(false), 5000)
     } catch (error) {
       console.error('Submission error:', error)
+      setErrors({ message: 'Submission failed. Please try again later.' })
     } finally {
       setIsSubmitting(false)
     }
