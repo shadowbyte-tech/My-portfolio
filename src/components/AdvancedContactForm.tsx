@@ -77,8 +77,11 @@ export default function AdvancedContactForm() {
     setIsSubmitting(true)
 
     try {
-      const formspreeId = import.meta.env.VITE_FORMSPREE_ID;
-      const web3formsKey = import.meta.env.VITE_WEB3FORMS_KEY;
+
+      const formspreeId = (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_FORMSPREE_ID || process.env.VITE_FORMSPREE_ID)) || '';
+      const web3formsKey = (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_WEB3FORMS_KEY || process.env.VITE_WEB3FORMS_KEY)) || '';
+
+
 
       if (formspreeId) {
         const response = await fetch(`https://formspree.io/f/${formspreeId}`, {

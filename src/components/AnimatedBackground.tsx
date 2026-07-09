@@ -1,81 +1,72 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 
 const AnimatedBackground = () => {
-  const blobRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  useEffect(() => {
-    let requestId: number
-
-    const handleScroll = () => {
-      const scroll = window.pageYOffset
-
-      blobRefs.current.forEach((blob, index) => {
-        if (!blob) return
-
-        const xOffset =
-          Math.sin(scroll / 120 + index * 0.6) * 100
-
-        const yOffset =
-          Math.cos(scroll / 120 + index * 0.6) * 35
-
-        blob.style.transform = `translate(${xOffset}px, ${yOffset}px)`
-        blob.style.transition = 'transform 1.2s ease-out'
-      })
-
-      requestId = requestAnimationFrame(handleScroll)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    handleScroll()
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      cancelAnimationFrame(requestId)
-    }
-  }, [])
-
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0">
-        {/* kiri atas */}
-        <div
-          ref={(ref) => {
-            blobRefs.current[0] = ref
-          }}
-          className="absolute top-10 left-10 w-40 h-40 md:w-56 md:h-56 rounded-full bg-white blur-[90px] opacity-30"
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-[#050816]">
+      {/* GLOWING ORBS / ACCENT BLOBS */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Blob 1: Cyan (Top Left) */}
+        <div 
+          className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-[#00F5FF] blur-[150px] opacity-[0.15] animate-blob-drift-1" 
         />
 
-        {/* kanan atas */}
-        <div
-          ref={(ref) => {
-            blobRefs.current[1] = ref
-          }}
-          className="absolute top-10 right-10 w-40 h-40 md:w-56 md:h-56 rounded-full bg-zinc-300 blur-[100px] opacity-25"
+        {/* Blob 2: Purple (Top Right) */}
+        <div 
+          className="absolute top-[10%] right-[-10%] w-[45vw] h-[45vw] max-w-[550px] max-h-[550px] rounded-full bg-[#7C3AED] blur-[160px] opacity-[0.2] animate-blob-drift-2" 
         />
 
-        {/* kiri bawah */}
-        <div
-          ref={(ref) => {
-            blobRefs.current[2] = ref
-          }}
-          className="absolute bottom-10 left-10 w-44 h-44 md:w-60 md:h-60 rounded-full bg-zinc-400 blur-[110px] opacity-30"
+        {/* Blob 3: Purple (Bottom Left) */}
+        <div 
+          className="absolute bottom-[-10%] left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-[#7C3AED] blur-[150px] opacity-[0.15] animate-blob-drift-3" 
         />
 
-        {/* kanan bawah */}
-        <div
-          ref={(ref) => {
-            blobRefs.current[3] = ref
-          }}
-          className="absolute bottom-10 right-10 w-40 h-40 md:w-56 md:h-56 rounded-full bg-white blur-[100px] opacity-20"
+        {/* Blob 4: Cyan (Bottom Right) */}
+        <div 
+          className="absolute bottom-[10%] right-[-10%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-[#00F5FF] blur-[140px] opacity-[0.12] animate-blob-drift-4" 
         />
       </div>
 
-      {/* GRID */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:26px_26px]" />
+      {/* FAINT GRID PATTERN */}
+      <div 
+        className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px]" 
+        style={{
+          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 95%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 95%)'
+        }}
+      />
+
+      {/* NOISE OVERLAY */}
+      <div className="noise-overlay" />
+
+      {/* STYLE TAG FOR CUSTOM ANIMATIONS */}
+      <style>{`
+        @keyframes blobDrift1 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, 50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        @keyframes blobDrift2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(-40px, -30px) scale(1.05); }
+        }
+        @keyframes blobDrift3 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          40% { transform: translate(30px, -40px) scale(0.9); }
+        }
+        @keyframes blobDrift4 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          60% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        .animate-blob-drift-1 { animation: blobDrift1 25s infinite ease-in-out; }
+        .animate-blob-drift-2 { animation: blobDrift2 22s infinite ease-in-out; }
+        .animate-blob-drift-3 { animation: blobDrift3 28s infinite ease-in-out; }
+        .animate-blob-drift-4 { animation: blobDrift4 20s infinite ease-in-out; }
+      `}</style>
     </div>
   )
 }
 
 export default AnimatedBackground
+
